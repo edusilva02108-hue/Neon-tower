@@ -6,7 +6,8 @@
 
 // ---------- CONFIGURAÇÃO DE MONETIZAÇÃO (edite aqui) ----------
 const CONFIG = {
-  linkApoio: "https://SEU-LINK-DE-APOIO-AQUI", // Pix (link), Apoia.se, Ko-fi, Buy Me a Coffee...
+  chavePix: "ba4f78da-dd87-44c5-a166-a3dd3cae71f5", // e-mail, telefone, CPF ou chave aleatória. O botão copia essa chave.
+  linkApoio: "https://SEU-LINK-DE-APOIO-AQUI", // usado só se você não preencher a chavePix (Apoia.se, Ko-fi...)
   anuncioACada: 3,        // mostra anúncio de tela cheia a cada X partidas
   pontosParaContinuar: 5, // pontuação mínima para oferecer "continuar vendo anúncio"
 };
@@ -105,6 +106,7 @@ function draw() {
   pop();
 
   desenharInterface();
+  desenharAvisoPix();
 }
 
 function atualizarJogo() {
@@ -356,8 +358,37 @@ function acao() {
   else cliqueMenu();
 }
 
+let avisoPix = 0;
+
 function abrirApoio() {
-  window.open(CONFIG.linkApoio, "_blank");
+  const chave = CONFIG.chavePix;
+  if (chave && !chave.startsWith("SUA-")) {
+    try { navigator.clipboard.writeText(chave); } catch (e) {}
+    avisoPix = millis() + 4000; // mostra a chave na tela por 4 segundos
+  } else {
+    window.open(CONFIG.linkApoio, "_blank");
+  }
+}
+
+function desenharAvisoPix() {
+  if (millis() > avisoPix) return;
+  push();
+  rectMode(CENTER);
+  textAlign(CENTER, CENTER);
+  fill(0, 0, 0, 0.85);
+  rect(width / 2, height * 0.5, min(width * 0.9, 460 * esc), 120 * esc, 16 * esc);
+  fill(150, 60, 100);
+  textStyle(BOLD);
+  textSize(22 * esc);
+  text("Chave Pix copiada! ♥", width / 2, height * 0.5 - 28 * esc);
+  fill(0, 0, 100);
+  textSize(18 * esc);
+  text(CONFIG.chavePix, width / 2, height * 0.5 + 8 * esc);
+  textStyle(NORMAL);
+  textSize(14 * esc);
+  fill(0, 0, 100, 0.7);
+  text("Cole no app do seu banco. Obrigado!", width / 2, height * 0.5 + 38 * esc);
+  pop();
 }
 
 function cliqueMenu() {
